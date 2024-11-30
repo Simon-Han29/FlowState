@@ -104,16 +104,15 @@ const My_applications = () => {
     return (
         <div className="h-screen flex flex-col">
             <Navbar />
+
             <div className="flex-1 flex justify-center items-center">
                 {isNewJobMenuShowing ? (
                     <Card className="absolute border w-[70%] h-[50rem] bg-white z-10">
-                        <CardHeader>
-                            <div>
-                                <Button onClick={toggleJobMenu}>Close</Button>
-                            </div>
-                            <CardTitle>Job Information</CardTitle>
+                        <CardHeader className="flex flex-row justify-between items-center">
+                            <CardTitle>New Job Information</CardTitle>
+                            <Button onClick={toggleJobMenu}>Close</Button>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="flex flex-col">
                             <Input
                                 placeholder="Company"
                                 onChange={handleNewCompanyChange}
@@ -182,8 +181,14 @@ const My_applications = () => {
                 ) : (
                     <></>
                 )}
-                <Card className="w-[85%]">
-                    <CardHeader className="flex flex-row justify-between">
+                <Card
+                    className={`w-[85%] ${
+                        isNewJobMenuShowing
+                            ? "no-select blur-lg pointer-events-none"
+                            : ""
+                    }`}
+                >
+                    <CardHeader className="flex flex-row justify-between items-center">
                         <CardTitle>Job Applications</CardTitle>
                         <Button onClick={toggleJobMenu}>Add +</Button>
                     </CardHeader>
