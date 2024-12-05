@@ -1,12 +1,7 @@
 "use client";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
-import { useEffect } from "react";
 export default function Home() {
-    useEffect(() => {
-        console.log(process.env.GOOGLE_CLIENT_ID);
-        console.log(process.env.GOOGLE_CLIENT_SECRET);
-    }, []);
     return (
         <div className="flex flex-col h-screen">
             <Navbar />

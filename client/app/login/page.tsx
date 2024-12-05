@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Card,
     CardContent,
@@ -10,9 +10,15 @@ import {
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { LoginRes } from "@/types/types";
+import { useAuth } from "@/context/authContext";
+import { useRouter } from "next/navigation";
 const Login = () => {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+
+    const { login, isAuthenticated } = useAuth();
+    const router = useRouter();
 
     function handleUsernameChange(e: React.ChangeEvent<HTMLInputElement>) {
         setUsername(e.target.value.trim());
@@ -21,7 +27,36 @@ const Login = () => {
     function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
         setPassword(e.target.value.trim());
     }
-    async function handleLogin() {}
+    async function handleLogin() {
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password,
+            }),
+        })
+            .then((res) => {
+                if (res.status === 201) {
+                    return res.json();
+                } else {
+                    console.log("Login unsuccessful");
+                }
+            })
+            .then((data: LoginRes) => {
+                const token = data.token;
+                login(token);
+                router.push("/");
+            });
+    }
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            router.push("/");
+        }
+    }, []);
 
     return (
         <div className="flex flex-col h-screen">
