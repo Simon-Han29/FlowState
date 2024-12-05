@@ -1,8 +1,8 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import {
     Card,
     CardContent,
-    CardDescription,
     CardFooter,
     CardHeader,
     CardTitle,
@@ -10,9 +10,19 @@ import {
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@radix-ui/react-label";
-
 const Login = () => {
+    const [username, setUsername] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+
+    function handleUsernameChange(e: React.ChangeEvent<HTMLInputElement>) {
+        setUsername(e.target.value.trim());
+    }
+
+    function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
+        setPassword(e.target.value.trim());
+    }
+    async function handleLogin() {}
+
     return (
         <div className="flex flex-col h-screen">
             <Navbar />
@@ -26,15 +36,17 @@ const Login = () => {
                             placeholder="Username"
                             className="mb-[1rem]"
                             id="username"
+                            onChange={handleUsernameChange}
                         />
                         <Input
                             placeholder="Password"
                             type="password"
                             id="password"
+                            onChange={handlePasswordChange}
                         />
                     </CardContent>
                     <CardFooter className="justify-center">
-                        <Button>Login</Button>
+                        <Button onClick={handleLogin}>Login</Button>
                     </CardFooter>
                 </Card>
             </div>
