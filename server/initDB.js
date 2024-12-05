@@ -3,7 +3,7 @@ const client = require("./db");
 async function createUsers() {
     const createUsersTableQ = `
         CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
+            id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
             username VARCHAR(100) NOT NULL,
             password VARCHAR(100) NOT NULL
         )
