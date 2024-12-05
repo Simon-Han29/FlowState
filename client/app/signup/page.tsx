@@ -13,9 +13,10 @@ import { Button } from "@/components/ui/button";
 const Signup = () => {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-
+    const [usernameTakenErr, setUsernameTakenErr] = useState<boolean>(false);
     function handleUsernameChange(e: React.ChangeEvent<HTMLInputElement>) {
         setUsername(e.target.value.trim());
+        setUsernameTakenErr(false);
     }
 
     function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -36,6 +37,7 @@ const Signup = () => {
                 if (res.status === 201) {
                     console.log("Successfully created account");
                 } else if (res.status === 409) {
+                    setUsernameTakenErr(true);
                     console.log("Account with username already exists");
                 } else {
                     console.log("Something went wrong with the server");
@@ -55,12 +57,20 @@ const Signup = () => {
                         <CardTitle>Create an Account</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <Input
-                            placeholder="Username"
-                            className="mb-[1rem]"
-                            id="username"
-                            onChange={handleUsernameChange}
-                        />
+                        <div className="mb-[1rem]">
+                            <Input
+                                placeholder="Username"
+                                id="username"
+                                onChange={handleUsernameChange}
+                            />
+                            {usernameTakenErr ? (
+                                <p className="text-red-600">
+                                    Username is already taken
+                                </p>
+                            ) : (
+                                <></>
+                            )}
+                        </div>
                         <Input
                             placeholder="Password"
                             type="password"
