@@ -49,26 +49,6 @@ const My_applications = () => {
     const [newJobTitle, setNewJobTitle] = useState<string>("");
     const [newStatus, setnewStatus] = useState<string>("Applied");
     const [newDate, setNewDate] = useState<Date | undefined>(new Date());
-    const jobApplications = [
-        {
-            id: 1,
-            company: "Google",
-            position: "Software Engineer",
-            status: "Applied",
-        },
-        {
-            id: 2,
-            company: "Amazon",
-            position: "Frontend Developer",
-            status: "Interview Scheduled",
-        },
-        {
-            id: 3,
-            company: "Meta",
-            position: "Backend Developer",
-            status: "Rejected",
-        },
-    ];
 
     function handleNewCompanyChange(e: React.ChangeEvent<HTMLInputElement>) {
         setNewCompany(e.target.value);
