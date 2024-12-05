@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import {
     Card,
     CardContent,
-    CardDescription,
     CardFooter,
     CardHeader,
     CardTitle,
@@ -11,8 +10,6 @@ import {
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@radix-ui/react-label";
-
 const Signup = () => {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
