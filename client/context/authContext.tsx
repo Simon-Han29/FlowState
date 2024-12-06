@@ -1,42 +1,23 @@
 "use client";
 
-import {
-    createContext,
-    useState,
-    useEffect,
-    useContext,
-    ReactNode,
-} from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "universal-cookie";
+import {
+    AuthContextType,
+    AuthProviderProps,
+    JWTType,
+    JobType,
+} from "@/types/authConntextTypes";
 
 const cookies = new Cookies();
-
-interface AuthContextType {
-    isAuthenticated: boolean;
-    id: string;
-    username: string;
-    login: (token: string) => void;
-    logout: () => void;
-}
-
-interface AuthProviderProps {
-    children: ReactNode;
-}
-
-interface JWTType {
-    username: string;
-    uid: string;
-    iat: string;
-}
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [username, setUsername] = useState<string>("");
     const [id, setId] = useState<string>("");
-
+    const [loading, setLoading] = useState<boolean>(true);
     useEffect(() => {
         const token = cookies.get("token");
         if (token) {
@@ -45,7 +26,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 try {
                     const decoded: JWTType = jwtDecode(token);
                     setUsername(decoded.username);
-                    setId(decoded.uid);
+                    setId(decoded.id);
                     setIsAuthenticated(true);
                 } catch (error) {
                     console.error("Token decode error:", error);
@@ -58,6 +39,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } else {
             resetSessionData();
         }
+        setLoading(false);
     }, []);
 
     function resetSessionData() {
@@ -65,6 +47,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUsername("");
         setId("");
         setIsAuthenticated(false);
+        setLoading(false);
     }
 
     function login(token: string) {
@@ -75,7 +58,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 cookies.set("token", token, { path: "/" });
                 const decoded: JWTType = jwtDecode(token);
                 setUsername(decoded.username);
-                setId(decoded.uid);
+                setId(decoded.id);
                 setIsAuthenticated(true);
             } else {
                 throw new Error("Invalid token format");
@@ -90,9 +73,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         resetSessionData();
     }
 
+    async function addJob(newJob: JobType) {
+        try {
+            fetch(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/user/${id}/job_applications`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(newJob),
+                }
+            ).then((res) => {
+                if (res.status === 201) {
+                    console.log("Job Added Successfully");
+                } else {
+                    console.log("Something went wrong when adding the job");
+                }
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     return (
         <AuthContext.Provider
-            value={{ isAuthenticated, username, id, login, logout }}
+            value={{
+                isAuthenticated,
+                username,
+                id,
+                loading,
+                login,
+                logout,
+                addJob,
+            }}
         >
             {children}
         </AuthContext.Provider>

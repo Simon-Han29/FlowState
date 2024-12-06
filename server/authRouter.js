@@ -34,8 +34,10 @@ router.post("/login", async (req, res) => {
         const data = {
             username: userData.username,
             id: userData.id,
+            job_applications: userData.job_applications,
         };
         console.log(process.env.SECRET_KEY);
+        console.log(data);
         const token = jwt.sign(data, process.env.SECRET_KEY);
         res.status(201).send({ msg: "Login Successful", token: token });
     }
@@ -69,10 +71,10 @@ async function doesAccExist(username) {
 
 async function createUser(username, password) {
     const createUserQ = `
-        INSERT INTO users (username, password)
-        VALUES ($1, $2)
+        INSERT INTO users (username, password, job_applications)
+        VALUES ($1, $2, $3)
     `;
-    await client.query(createUserQ, [username, password]);
+    await client.query(createUserQ, [username, password, "[]"]);
 }
 
 module.exports = router;
