@@ -17,7 +17,7 @@ async function createUsers() {
 
     const createJobAppTableQ = `
         CREATE TABLE IF NOT EXISTS job_applications (
-            if UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+            id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
             user_id UUID REFERENCES users(id) ON DELETE CASCADE,
             job_title VARCHAR(255) NOT NULL,
             company VARCHAR(225) NOT NULL,

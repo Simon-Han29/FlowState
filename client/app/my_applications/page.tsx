@@ -44,7 +44,7 @@ const My_applications = () => {
     const [newJobTitle, setNewJobTitle] = useState<string>("");
     const [newStatus, setnewStatus] = useState<string>("Applied");
     const [newDate, setNewDate] = useState<Date | undefined>(new Date());
-    const { isAuthenticated, loading, addJob } = useAuth();
+    const { id, isAuthenticated, loading, addJob } = useAuth();
     const router = useRouter();
 
     function handleNewCompanyChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -83,6 +83,26 @@ const My_applications = () => {
     useEffect(() => {
         if (!isAuthenticated && !loading) {
             router.push("/login");
+        } else if (!id) {
+            return;
+        } else {
+            fetch(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/user/${id}/job_applications`
+            )
+                .then((res) => {
+                    console.log(res.status);
+                    if (res.status === 200) {
+                        console.log("We getting it here");
+                        return res.json();
+                    } else {
+                        console.log("Something went wrong");
+                    }
+                })
+                .then((storedList: JobType[]) => {
+                    console.log("GETS TO STORED LIST");
+                    console.log(storedList);
+                    setJobs(storedList);
+                });
         }
     }, [loading, isAuthenticated, router]);
 
@@ -190,38 +210,43 @@ const My_applications = () => {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {jobs.map((job, index) => (
-                                    <TableRow key={index + 1}>
-                                        <TableCell>{index + 1}</TableCell>
-                                        <TableCell>{job.company}</TableCell>
-                                        <TableCell>{job.job_title}</TableCell>
-                                        <TableCell>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger>
-                                                    Open
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent>
-                                                    <DropdownMenuLabel>
-                                                        Status Options
-                                                    </DropdownMenuLabel>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem>
-                                                        Applied
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem>
-                                                        Rejected/Ghosted
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem>
-                                                        Interview Scheduled
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </TableCell>
-                                        <TableCell>
-                                            {job.date_applied.toLocaleDateString()}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                {jobs &&
+                                    jobs.map((job, index) => (
+                                        <TableRow key={index + 1}>
+                                            <TableCell>{index + 1}</TableCell>
+                                            <TableCell>{job.company}</TableCell>
+                                            <TableCell>
+                                                {job.job_title}
+                                            </TableCell>
+                                            <TableCell>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger>
+                                                        Open
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent>
+                                                        <DropdownMenuLabel>
+                                                            Status Options
+                                                        </DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem>
+                                                            Applied
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem>
+                                                            Rejected/Ghosted
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem>
+                                                            Interview Scheduled
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                            <TableCell>
+                                                {new Date(
+                                                    job.date_applied
+                                                ).toLocaleDateString()}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
                             </TableBody>
                         </Table>
                     </CardContent>

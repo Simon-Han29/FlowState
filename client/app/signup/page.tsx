@@ -10,10 +10,12 @@ import {
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 const Signup = () => {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [usernameTakenErr, setUsernameTakenErr] = useState<boolean>(false);
+    const router = useRouter();
     function handleUsernameChange(e: React.ChangeEvent<HTMLInputElement>) {
         setUsername(e.target.value.trim());
         setUsernameTakenErr(false);
@@ -36,6 +38,7 @@ const Signup = () => {
             .then((res) => {
                 if (res.status === 201) {
                     console.log("Successfully created account");
+                    router.push("/login");
                 } else if (res.status === 409) {
                     setUsernameTakenErr(true);
                     console.log("Account with username already exists");

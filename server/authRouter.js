@@ -27,19 +27,20 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
     const { username, password } = req.body;
     const userData = await getUser(username);
-    console.log(userData);
     if (userData === null) {
         res.status(404).send({ msg: "username not found" });
     } else {
-        const data = {
-            username: userData.username,
-            id: userData.id,
-            job_applications: userData.job_applications,
-        };
-        console.log(process.env.SECRET_KEY);
-        console.log(data);
-        const token = jwt.sign(data, process.env.SECRET_KEY);
-        res.status(201).send({ msg: "Login Successful", token: token });
+        if (userData.password !== password) {
+            res.status(401).send({ msg: "password does not match" });
+        } else {
+            const data = {
+                username: userData.username,
+                id: userData.id,
+                job_applications: userData.job_applications,
+            };
+            const token = jwt.sign(data, process.env.SECRET_KEY);
+            res.status(201).send({ msg: "Login Successful", token: token });
+        }
     }
 });
 

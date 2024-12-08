@@ -1,6 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const client = require("./db");
+router.get("/:id/job_applications", async (req, res) => {
+    try {
+        const jobs = await getJobByUserId(req.params.id);
+        console.log("these are the jobs");
+        console.log(jobs);
+        res.status(200).send(jobs);
+    } catch (err) {
+        res.status(500).send("Error fetching user jobs");
+    }
+});
+
 router.post("/:id/job_applications", async (req, res) => {
     try {
         const newJob = req.body;
@@ -30,5 +41,14 @@ async function addJob(id, job) {
         date_appplied,
         status,
     ]);
+}
+
+async function getJobByUserId(id) {
+    const getJobQ = `
+        SELECT * FROM job_applications
+        WHERE user_id=$1
+    `;
+    const jobs = await client.query(getJobQ, [id]);
+    return jobs.rows;
 }
 module.exports = router;
