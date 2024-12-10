@@ -9,8 +9,10 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { useAuth } from "@/context/authContext";
 const Navbar = () => {
-    const { isAuthenticated, logout } = useAuth();
-
+    const { isAuthenticated, logout, loading } = useAuth();
+    if (loading) {
+        return <div className="h-[4rem]"></div>;
+    }
     return (
         <div className="flex justify-between px-[4rem] py-[1rem] font-bold text-[1.1rem]">
             <div>

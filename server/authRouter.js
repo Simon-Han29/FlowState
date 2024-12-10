@@ -1,10 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const client = require("./db");
-const { v4: uuidv4 } = require("uuid");
-const { jwtDecode } = require("jwt-decode");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
 
 router.post("/signup", async (req, res) => {
     try {
@@ -27,17 +24,20 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
     const { username, password } = req.body;
     const userData = await getUser(username);
-    console.log(userData);
     if (userData === null) {
         res.status(404).send({ msg: "username not found" });
     } else {
-        const data = {
-            username: userData.username,
-            id: userData.id,
-        };
-        console.log(process.env.SECRET_KEY);
-        const token = jwt.sign(data, process.env.SECRET_KEY);
-        res.status(201).send({ msg: "Login Successful", token: token });
+        if (userData.password !== password) {
+            res.status(401).send({ msg: "password does not match" });
+        } else {
+            const data = {
+                username: userData.username,
+                id: userData.id,
+                job_applications: userData.job_applications,
+            };
+            const token = jwt.sign(data, process.env.SECRET_KEY);
+            res.status(201).send({ msg: "Login Successful", token: token });
+        }
     }
 });
 
@@ -69,10 +69,10 @@ async function doesAccExist(username) {
 
 async function createUser(username, password) {
     const createUserQ = `
-        INSERT INTO users (username, password)
-        VALUES ($1, $2)
+        INSERT INTO users (username, password, job_applications)
+        VALUES ($1, $2, $3)
     `;
-    await client.query(createUserQ, [username, password]);
+    await client.query(createUserQ, [username, password, "[]"]);
 }
 
 module.exports = router;

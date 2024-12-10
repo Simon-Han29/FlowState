@@ -16,16 +16,18 @@ import { useRouter } from "next/navigation";
 const Login = () => {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-
+    const [loginError, setLoginError] = useState<boolean>(false);
     const { login, isAuthenticated } = useAuth();
     const router = useRouter();
 
     function handleUsernameChange(e: React.ChangeEvent<HTMLInputElement>) {
         setUsername(e.target.value.trim());
+        setLoginError(false);
     }
 
     function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
         setPassword(e.target.value.trim());
+        setLoginError(false);
     }
     async function handleLogin() {
         fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login`, {
@@ -41,6 +43,12 @@ const Login = () => {
             .then((res) => {
                 if (res.status === 201) {
                     return res.json();
+                } else if (res.status === 404) {
+                    setLoginError(true);
+                    throw new Error("Invalid username");
+                } else if (res.status === 401) {
+                    setLoginError(true);
+                    throw new Error("Invalid password");
                 } else {
                     console.log("Login unsuccessful");
                 }
@@ -49,6 +57,9 @@ const Login = () => {
                 const token = data.token;
                 login(token);
                 router.push("/");
+            })
+            .catch((err) => {
+                console.log(err);
             });
     }
 
@@ -79,6 +90,11 @@ const Login = () => {
                             id="password"
                             onChange={handlePasswordChange}
                         />
+                        {loginError ? (
+                            <p className="text-red-700">Invalid credentials</p>
+                        ) : (
+                            <></>
+                        )}
                     </CardContent>
                     <CardFooter className="justify-center">
                         <Button onClick={handleLogin}>Login</Button>
