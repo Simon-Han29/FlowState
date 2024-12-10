@@ -1,10 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const client = require("./db");
-const { v4: uuidv4 } = require("uuid");
-const { jwtDecode } = require("jwt-decode");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
 
 router.post("/signup", async (req, res) => {
     try {
